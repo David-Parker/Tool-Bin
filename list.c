@@ -5,14 +5,14 @@
 
 int main() {
 	MyList * myList = newList();
-	createAndAdd(myList,"Grandpa");
-	createAndAdd(myList,"Grandma");
-	createAndAdd(myList,"Mom");
-	createAndAdd(myList,"Dad");
+	createAndAdd(myList,"Grandpa",0);
+	createAndAdd(myList,"Grandma",1);
+	createAndAdd(myList,"Mom",2);
+	createAndAdd(myList,"Dad",3);
 
 	ListElem * curr = getRoot(myList);
 	while(curr != NULL) {
-		printf("%s\n", curr->name);
+		printf("%s, %d\n", curr->name,curr->val);
 		curr = curr->next;
 	}
 }
@@ -52,9 +52,10 @@ ListElem * getRoot(MyList * list) {
 	else return list->head->next;
 }
 
-ListElem * createNode(char nodeName[]) {
+ListElem * createNode(char nodeName[], int val) {
 	ListElem * newElem = malloc(sizeof(ListElem));
 	newElem->next = NULL;
+	newElem->val = val;
 	strcpy(newElem->name,nodeName);
 	return newElem;
 }
@@ -69,8 +70,8 @@ ListElem * findByName(MyList * list, char name[]) {
 	return NULL;
 }
 
-void createAndAdd(MyList * list, char name[]) {
-	ListElem * newElem = createNode(name);
+void createAndAdd(MyList * list, char name[], int val) {
+	ListElem * newElem = createNode(name,val);
 	listAdd(list,newElem);
 }
 
@@ -80,7 +81,7 @@ bool listIsEmpty(MyList * list) {
 
 MyList * newList() {
 	MyList * newList = malloc(sizeof(MyList));
-	ListElem * Dummy = createNode("Dummy");
+	ListElem * Dummy = createNode("Dummy",0);
 	listAdd(newList,Dummy);
 	return newList;
 }

@@ -18,11 +18,11 @@ typedef struct List {
 /* Func Protos */
 void listAdd(MyList * list, ListElem * newElem);
 void listRemove(MyList * list, ListElem * rmElem);
-ListElem * createNode(char nodeName[]);
+ListElem * createNode(char nodeName[], int val);
 ListElem * findByName(MyList * list, char name[]);
 ListElem * getRoot(MyList * list);
 bool listIsEmpty(MyList * list);
-void createAndAdd(MyList * list, char name[]);
+void createAndAdd(MyList * list, char name[], int val);
 MyList* newList();
 
 #endif
