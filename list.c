@@ -9,6 +9,7 @@ int main() {
 	createAndAdd(myList,"Grandma",1);
 	createAndAdd(myList,"Mom",2);
 	createAndAdd(myList,"Dad",3);
+	listRemove(myList,findByValue(myList,2));
 
 	ListElem * curr = getRoot(myList);
 	while(curr != NULL) {
@@ -65,6 +66,16 @@ ListElem * findByName(MyList * list, char name[]) {
 	ListElem * curr = getRoot(list);
 	while(curr != NULL) {
 		if(!strcmp(curr->name,name)) return curr;
+		curr = curr->next;
+	}
+	return NULL;
+}
+
+ListElem * findByValue(MyList * list, int val) {
+	if(listIsEmpty(list)) return NULL;
+	ListElem * curr = getRoot(list);
+	while(curr != NULL) {
+		if(curr->val == val) return curr;
 		curr = curr->next;
 	}
 	return NULL;

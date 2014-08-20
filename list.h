@@ -20,6 +20,7 @@ void listAdd(MyList * list, ListElem * newElem);
 void listRemove(MyList * list, ListElem * rmElem);
 ListElem * createNode(char nodeName[], int val);
 ListElem * findByName(MyList * list, char name[]);
+ListElem * findByValue(MyList * list, int val);
 ListElem * getRoot(MyList * list);
 bool listIsEmpty(MyList * list);
 void createAndAdd(MyList * list, char name[], int val);
