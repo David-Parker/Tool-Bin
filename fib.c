@@ -16,11 +16,12 @@ int main() {
 	int num = 30;
 	printf("The %dth Fib number is: %g\n",num, g_fib(num,0,1));
 }
-
+/* Recursive fiboannci in O(2^n) time and O(1) space */
 int r_fib(int n) {
 	return n <= 1 ? n : r_fib(n-1) + r_fib(n-2);
 }
 
+/* Recursive fibonacci in O(n) time AND O(n) space */
 void l_fib(MyList * fib, int n, long long int last_elem, int i) {
 	if(n != 0 ) {
 		char name[15];
@@ -31,6 +32,7 @@ void l_fib(MyList * fib, int n, long long int last_elem, int i) {
 	}
 }
 
+/* Recursive fibonacci in O(n) time AND O(1) space*/
 double g_fib(int n, double total, double ans) {
 	if(n==1)return ans;
 	double num = (total == 0 ? 0 : 1/total);
