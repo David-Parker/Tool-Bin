@@ -3,20 +3,20 @@
 #include <string.h>
 #include "list.h"
 
-int main() {
-	MyList * myList = newList();
-	createAndAdd(myList,"Grandpa",0);
-	createAndAdd(myList,"Grandma",1);
-	createAndAdd(myList,"Mom",2);
-	createAndAdd(myList,"Dad",3);
-	listRemove(myList,findByValue(myList,2));
+// int main() {
+// 	MyList * myList = newList();
+// 	createAndAdd(myList,"Grandpa",0);
+// 	createAndAdd(myList,"Grandma",1);
+// 	createAndAdd(myList,"Mom",2);
+// 	createAndAdd(myList,"Dad",3);
+// 	listRemove(myList,findByValue(myList,3));
 
-	ListElem * curr = getRoot(myList);
-	while(curr != NULL) {
-		printf("%s, %d\n", curr->name,curr->val);
-		curr = curr->next;
-	}
-}
+// 	ListElem * curr = getRoot(myList);
+// 	while(curr != NULL) {
+// 		printf("%s, %d\n", curr->name,curr->val);
+// 		curr = curr->next;
+// 	}
+// }
 
 void listAdd(MyList * list, ListElem * newElem) {
 	if(list->head == NULL) {
@@ -53,7 +53,7 @@ ListElem * getRoot(MyList * list) {
 	else return list->head->next;
 }
 
-ListElem * createNode(char nodeName[], int val) {
+ListElem * createNode(char nodeName[], long long int val) {
 	ListElem * newElem = malloc(sizeof(ListElem));
 	newElem->next = NULL;
 	newElem->val = val;
@@ -71,7 +71,7 @@ ListElem * findByName(MyList * list, char name[]) {
 	return NULL;
 }
 
-ListElem * findByValue(MyList * list, int val) {
+ListElem * findByValue(MyList * list, long long int val) {
 	if(listIsEmpty(list)) return NULL;
 	ListElem * curr = getRoot(list);
 	while(curr != NULL) {
@@ -81,7 +81,7 @@ ListElem * findByValue(MyList * list, int val) {
 	return NULL;
 }
 
-void createAndAdd(MyList * list, char name[], int val) {
+void createAndAdd(MyList * list, char name[], long long int val) {
 	ListElem * newElem = createNode(name,val);
 	listAdd(list,newElem);
 }
@@ -95,6 +95,14 @@ MyList * newList() {
 	ListElem * Dummy = createNode("Dummy",0);
 	listAdd(newList,Dummy);
 	return newList;
+}
+
+void printList(MyList * list) {
+	ListElem * curr = getRoot(list);
+	while(curr != NULL) {
+		printf("%s, %llu\n", curr->name,curr->val);
+		curr = curr->next;
+	}
 }
 
 

@@ -1,68 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "list.h"
 
 /* Func Protos */
-typedef struct ListElem {
-	char name[64];
-	struct ListElem *next;
-} ListElem;
-
-typedef struct List {
-	struct ListElem * head;
-	struct ListElem * tail;
-} MyList;
-
-void add(MyList * list, ListElem * newElem);
-ListElem * createNode(char nodeName[]);
-ListElem * getRoot(MyList * list);
-void createAndAdd(MyList * list, char name[]);
-MyList* newList();
+int r_fib(int n);
+void l_fib(MyList * fib, int n, long long int last_elem);
 
 int main() {
-	MyList * myList = newList();
-	createAndAdd(myList,"Grandpa");
-	createAndAdd(myList,"Grandma");
+	MyList * fib = newList();
+	l_fib(fib,70,1LL);
+	printf("%llu\n", fib->tail->val);
+	printList(fib);
+}
 
-	ListElem * curr = getRoot(myList);
-	while(curr != NULL) {
-		printf("%s\n", curr->name);
-		curr = curr->next;
+int r_fib(int n) {
+	return n <= 1 ? n : r_fib(n-1) + r_fib(n-2);
+}
+
+void l_fib(MyList * fib, int n, long long int last_elem) {
+	if(n != 0 ) {
+		char name[15];
+		sprintf(name,"%d",n);
+		long long int lastTotal = fib->tail->val;
+		createAndAdd(fib,name,last_elem + fib->tail->val);
+		l_fib(fib,n-1,lastTotal);
 	}
 }
 
-void add(MyList * list, ListElem * newElem) {
-	if(list->head == NULL) {
-		list->head = newElem;
-		list->tail = list->head;
-		list->head->next = list->tail;
-	}
-	else {
-		list->tail->next = newElem;
-		list->tail = newElem;
-	}
-}
 
-ListElem * getRoot(MyList * list) {
-	return list->head;
-}
-
-ListElem * createNode(char nodeName[]) {
-	ListElem * newElem = malloc(sizeof(ListElem));
-	newElem->next = NULL;
-	strcpy(newElem->name,nodeName);
-	return newElem;
-}
-
-void createAndAdd(MyList * list, char name[]) {
-	ListElem * newElem = createNode(name);
-	add(list,newElem);
-}
-
-MyList * newList() {
-	MyList * newList = malloc(sizeof(MyList));
-	newList->head = NULL;
-	return newList;
-}
 
 

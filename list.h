@@ -4,7 +4,7 @@
 /* Type Definitons */
 typedef struct ListElem {
 	char name[64];
-	int val;
+	long long int val;
 	struct ListElem *next;
 } ListElem;
 
@@ -18,12 +18,13 @@ typedef struct List {
 /* Func Protos */
 void listAdd(MyList * list, ListElem * newElem);
 void listRemove(MyList * list, ListElem * rmElem);
-ListElem * createNode(char nodeName[], int val);
+ListElem * createNode(char nodeName[], long long int val);
 ListElem * findByName(MyList * list, char name[]);
-ListElem * findByValue(MyList * list, int val);
+ListElem * findByValue(MyList * list, long long int val);
 ListElem * getRoot(MyList * list);
 bool listIsEmpty(MyList * list);
-void createAndAdd(MyList * list, char name[], int val);
+void createAndAdd(MyList * list, char name[], long long int val);
 MyList* newList();
+void printList(MyList * list);
 
 #endif
