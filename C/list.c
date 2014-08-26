@@ -7,7 +7,6 @@
 
 void listAdd(List * list, ListElem * newElem) {
 	if(list->head == NULL) {
-		printf("true\n");
 		list->head = newElem;
 		list->tail = newElem;
 	}
@@ -51,7 +50,7 @@ ListElem * getRoot(List * list) {
 }
 
 ListElem * createNode(char nodeName[], long long int val) {
-	ListElem * newElem = malloc(sizeof(ListElem));
+	ListElem * newElem = calloc(1,sizeof(ListElem));
 	newElem->next = NULL;
 	newElem->val = val;
 	strcpy(newElem->name,nodeName);
@@ -90,10 +89,8 @@ bool listIsEmpty(List * list) {
 }
 
 List * newList() {
-	List * newList = malloc(sizeof(struct List));
+	List * newList = calloc(1,sizeof(struct List));
 	ListElem * Dummy = createNode("Dummy",0);
-	//printf("Adding dummy, %d\n", newList->head->val);
-	if(newList->head == NULL) printf("hetswdf\n");
 	listAdd(newList,Dummy);
 	return newList;
 }
