@@ -3,23 +3,11 @@
 #include <string.h>
 #include "list.h"
 
-// int main() {
-// 	MyList * myList = newList();
-// 	createAndAdd(myList,"Grandpa",0);
-// 	createAndAdd(myList,"Grandma",1);
-// 	createAndAdd(myList,"Mom",2);
-// 	createAndAdd(myList,"Dad",3);
-// 	listRemove(myList,findByValue(myList,3));
+/* General Purpose list class developed by David Parker */
 
-// 	ListElem * curr = getRoot(myList);
-// 	while(curr != NULL) {
-// 		printf("%s, %d\n", curr->name,curr->val);
-// 		curr = curr->next;
-// 	}
-// }
-
-void listAdd(MyList * list, ListElem * newElem) {
+void listAdd(List * list, ListElem * newElem) {
 	if(list->head == NULL) {
+		printf("true\n");
 		list->head = newElem;
 		list->tail = newElem;
 	}
@@ -29,7 +17,7 @@ void listAdd(MyList * list, ListElem * newElem) {
 	}
 }
 
-void listRemove(MyList * list, ListElem * rmElem) {
+void listRemove(List * list, ListElem * rmElem, bool destroy) {
 	if(listIsEmpty(list) || rmElem == NULL) return;
 
 	ListElem * curr = list->head;
@@ -38,7 +26,7 @@ void listRemove(MyList * list, ListElem * rmElem) {
 		if(next == rmElem) {
 			if(next == list->tail) list->tail = curr;
 			curr->next = next->next;
-			free(next);
+			if(destroy) free(next);
 			return;
 		}
 		curr = next;
@@ -48,8 +36,17 @@ void listRemove(MyList * list, ListElem * rmElem) {
 
 /* User Utility Functions */
 
-ListElem * getRoot(MyList * list) {
+ListElem * pop(List * list) {
 	if(listIsEmpty(list)) return NULL;
+
+	ListElem * temp = list->tail;
+	listRemove(list,list->tail,false);
+	return temp;
+}
+
+ListElem * getRoot(List * list) {
+	if(listIsEmpty(list)) return NULL;
+
 	else return list->head->next;
 }
 
@@ -61,8 +58,9 @@ ListElem * createNode(char nodeName[], long long int val) {
 	return newElem;
 }
 
-ListElem * findByName(MyList * list, char name[]) {
+ListElem * findByName(List * list, char name[]) {
 	if(listIsEmpty(list)) return NULL;
+
 	ListElem * curr = getRoot(list);
 	while(curr != NULL) {
 		if(!strcmp(curr->name,name)) return curr;
@@ -71,8 +69,9 @@ ListElem * findByName(MyList * list, char name[]) {
 	return NULL;
 }
 
-ListElem * findByValue(MyList * list, long long int val) {
+ListElem * findByValue(List * list, long long int val) {
 	if(listIsEmpty(list)) return NULL;
+
 	ListElem * curr = getRoot(list);
 	while(curr != NULL) {
 		if(curr->val == val) return curr;
@@ -81,23 +80,25 @@ ListElem * findByValue(MyList * list, long long int val) {
 	return NULL;
 }
 
-void createAndAdd(MyList * list, char name[], long long int val) {
+void createAndAdd(List * list, char name[], long long int val) {
 	ListElem * newElem = createNode(name,val);
 	listAdd(list,newElem);
 }
 
-bool listIsEmpty(MyList * list) {
+bool listIsEmpty(List * list) {
 	return list->head->next == NULL;
 }
 
-MyList * newList() {
-	MyList * newList = malloc(sizeof(MyList));
+List * newList() {
+	List * newList = malloc(sizeof(struct List));
 	ListElem * Dummy = createNode("Dummy",0);
+	//printf("Adding dummy, %d\n", newList->head->val);
+	if(newList->head == NULL) printf("hetswdf\n");
 	listAdd(newList,Dummy);
 	return newList;
 }
 
-void printList(MyList * list) {
+void printList(List * list) {
 	ListElem * curr = getRoot(list);
 	while(curr != NULL) {
 		printf("%s, %llu\n", curr->name,curr->val);
