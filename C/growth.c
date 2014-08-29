@@ -6,10 +6,6 @@
 #include <time.h>
 #include <math.h>
 
-/* Func Protos */
-bool isPrime(int x);
-
-
 int main() {
 	double total = 2038;
 	double cont = 2038;
@@ -25,16 +21,6 @@ int main() {
 	}
 	printf("Total amount after %d years with $%.02f of contributions a year: %g", t,cont,total);
 }
-
-bool isPrime(int x) {
-	int i;
-	for(i = 2; i*i <= x; i++) {
-		if(x % i == 0) return false;
-	}
-	return true;
-}
-
-
 
 
 

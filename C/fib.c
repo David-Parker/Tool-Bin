@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	printf("Time to complete: %f\n", ((double)clock() - (double)t0)/1000);
+	printf("Time to complete: %f\n", ((double)clock() - (double)t0)/CLOCKS_PER_SEC);
 }
 
 /* Recursive fiboannci in O(2^n) time and O(1) space */
