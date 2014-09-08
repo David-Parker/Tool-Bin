@@ -8,22 +8,13 @@
 
 /* Func Protos */
 bool isPrime(int x);
-
+void test();
 
 int main() {
-	double total = 2038;
-	double cont = 2038;
-	double cont_rate = .0;
-	double rate = .08;
-	double comp_num = 12; // monthly
-	int t = 1;
-
-	for(int i = 0; i < t; i++) {
-		total = total + cont;
-		total = total * pow((double)(1 + rate/comp_num),comp_num);
-		cont *= (1 + cont_rate);
+	for(int i = 0; i < 10; i++) {
+		test();
 	}
-	printf("Total amount after %d years with $%.02f of contributions a year: %g", t,cont,total);
+	
 }
 
 bool isPrime(int x) {
@@ -33,6 +24,14 @@ bool isPrime(int x) {
 	}
 	return true;
 }
+
+void test() {
+	static int x = 5;
+	x++;
+	printf("%d\n", x);
+
+}
+
 
 
 

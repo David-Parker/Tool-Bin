@@ -1,0 +1,1 @@
+find . -name "*.vi" | wc -l
