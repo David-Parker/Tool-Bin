@@ -11,7 +11,7 @@ char * splitStrings(char str[], int index);
 void permutations(char prefix[], char str[], int length);
 
 int main() {
-	char str[] = "abc";
+	char str[] = "abcdefg";
 	char prefix[64] = "";
 	permutations(prefix,str,strlen(str));
 }
