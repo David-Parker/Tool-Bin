@@ -4,12 +4,7 @@
 #include <stdbool.h>
 #include "javastring.h"
 
-int main(int argc, char* argv[]) {
-	String str = newString("madam im adam");
-	//String str2 = str.substring(&str,0,5);
-	str = str.reverse(&str);
-	str.printString(&str);
-}
+/* String Class developed by David Parker */
 
 /************************ USER FUNCTIONS ************************/
 
@@ -31,7 +26,9 @@ String newString(char* text) {
 	str->split = &split;
 	str->substring = &substring;
 	str->toLowerCase = &toLowerCase;
+	str->toUpperCase = &toUpperCase;
 	str->reverse = &reverse;
+	str->removeSpaces = &removeSpaces;
 
 	return *str;
 }
@@ -114,6 +111,21 @@ String toLowerCase(String * str) {
 
 }
 
+String toUpperCase(String * str) {
+	char* newstr = calloc(1,length(str));
+	int i;
+	int len = length(str);
+
+	for(i = 0; i < len; i++) {
+		if(isLowercaseLetter(str->text[i])) newstr[i] = (str->text[i] + ('A' - 'a'));
+		else newstr[i] = str->text[i];
+	}
+
+	newstr[len] = '\0';
+
+	return newString(newstr);
+}
+
 String reverse(String * str) {
 	char * newstr = calloc(1,length(str) + 1);
 	int len = length(str);
@@ -127,6 +139,24 @@ String reverse(String * str) {
 	}
 
 	newstr[len] = '\0';
+
+	return newString(newstr);
+}
+
+String removeSpaces(String * str) {
+	char * newstr = calloc(1,length(str) + 1);
+	int len = length(str);
+	int i;
+	int index = 0;
+
+	for(i = 0; i < len; i++) {
+		if(str->text[i] != ' ') {
+			newstr[index] = str->text[i];
+			index++;
+		}
+	}
+
+	newstr[index + 1] = '\0';
 
 	return newString(newstr);
 }
@@ -149,4 +179,8 @@ int countStrings(char* str, char* pattern) {
 
 bool isUppercaseLetter(char c) {
 	return (c >= 'A' && c <= 'Z');
+}
+
+bool isLowercaseLetter(char c) {
+	return (c >= 'a' && c <= 'z');
 }

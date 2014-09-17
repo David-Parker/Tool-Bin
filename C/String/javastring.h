@@ -20,7 +20,9 @@ typedef struct String {
 	struct String * (*split)(struct String * str, char* pattern);
 	struct String (*substring)(struct String * str, int beginIndex,int endIndex);
 	struct String (*toLowerCase)(struct String * str);
+	struct String (*toUpperCase)(struct String * str);
 	struct String (*reverse)(struct String * str);
+	struct String (*removeSpaces)(struct String * str);
 } String;
 
 /* Function Prototypes */
@@ -34,10 +36,13 @@ void printString(String * str);
 String * split(String * str, char* pattern);
 String substring(String * str, int beginIndex,int endIndex);
 String toLowerCase(String * str);
+String toUpperCase(String * str);
 String reverse(String * str);
+String removeSpaces(String * str);
 
 /* Utility Functions */
 int countStrings(char* str, char* pattern);
 bool isUppercaseLetter(char c);
+bool isLowercaseLetter(char c);
 
 #endif
