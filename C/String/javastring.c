@@ -5,12 +5,10 @@
 #include "javastring.h"
 
 int main(int argc, char* argv[]) {
-	String str = newString("Hello World!");
-
-	String test[3];
-	split(&str," ",test);
-
-	printf("%s\n", test[1].text);
+	String str = newString("madam im adam");
+	//String str2 = str.substring(&str,0,5);
+	str = str.reverse(&str);
+	str.printString(&str);
 }
 
 /************************ USER FUNCTIONS ************************/
@@ -29,6 +27,11 @@ String newString(char* text) {
 	str->equals = &equals;
 	str->isEmpty = &isEmpty;
 	str->length = &length;
+	str->printString = &printString;
+	str->split = &split;
+	str->substring = &substring;
+	str->toLowerCase = &toLowerCase;
+	str->reverse = &reverse;
 
 	return *str;
 }
@@ -37,17 +40,6 @@ char charAt(String * str, int i) {
 	if(i < 0 || i > (strlen(str->text) - 1)) return ERROR;
 
 	else return str->text[i];
-}
-
-void concat(String * str, String * append) {
-	char* newstr = calloc(1,strlen(str->text) + strlen(append->text) + 2);
-	strcat(newstr,str->text);
-	strcat(newstr,append->text);
-
-	/* Free the old string text */
-	free(str->text);
-
-	str->text = newstr;
 }
 
 bool equals(String * str, String * str2) {
@@ -62,10 +54,18 @@ int length(String * str) {
 	return strlen(str->text);
 }
 
-int split(String * str, char* pattern, String arr[]) {
+void printString(String * str) {
+	printf("%s\n", str->text);
+}
+
+String * split(String * str, char* pattern) {
 	int i = 0;
-	//int numStrings = countStrings(str,pattern);
-	//String * arr = calloc(1,numStrings*sizeof(String));
+	char* newstr = malloc(strlen(str->text) + 1);
+	strcpy(newstr,str->text);
+	int numStrings = countStrings(newstr,pattern);
+	free(newstr);
+
+	String * arr = calloc(1,numStrings*sizeof(String));
 	char * pch = strtok(str->text,pattern);
 
 	while(pch != NULL) {
@@ -75,16 +75,69 @@ int split(String * str, char* pattern, String arr[]) {
 		i++;
 	}
 
-	return 0;
+	return arr;
+}
+
+String concat(String * str, String * append) {
+	char* newstr = calloc(1,strlen(str->text) + strlen(append->text) + 2);
+	strcat(newstr,str->text);
+	strcat(newstr,append->text);
+
+	return newString(newstr);
+}
+
+String substring(String * str, int beginIndex,int endIndex) {
+	if(beginIndex < 0 || beginIndex >= length(str) || endIndex < beginIndex || endIndex >= length(str)) return *str;
+
+	char* newstr = calloc(1,length(str));
+
+	strcpy(newstr,str->text);
+	newstr[endIndex + 1] = '\0';
+	newstr = newstr+beginIndex;
+
+	return newString(newstr);
+}
+
+String toLowerCase(String * str) {
+	char* newstr = calloc(1,length(str));
+	int i;
+	int len = length(str);
+
+	for(i = 0; i < len; i++) {
+		if(isUppercaseLetter(str->text[i])) newstr[i] = (str->text[i] - ('A' - 'a'));
+		else newstr[i] = str->text[i];
+	}
+
+	newstr[len] = '\0';
+
+	return newString(newstr);
+
+}
+
+String reverse(String * str) {
+	char * newstr = calloc(1,length(str) + 1);
+	int len = length(str);
+	int i;
+	int k = len - 1;
+
+	for(i = 0; i < (len/2) + 1; i++) {
+		newstr[i] = str->text[k];
+		newstr[k] = str->text[i];
+		k--;
+	}
+
+	newstr[len] = '\0';
+
+	return newString(newstr);
 }
 
 /*********************** UTILITY FUNCTIONS ***********************/
 
-int countStrings(String * str, char* pattern) {
+int countStrings(char* str, char* pattern) {
 	int count = 0;
 	char* pch;
 
-	pch = strtok(str->text,pattern);
+	pch = strtok(str,pattern);
 
 	while(pch != NULL) {
 		count++;
@@ -92,4 +145,8 @@ int countStrings(String * str, char* pattern) {
 	}
 
 	return count;
+}
+
+bool isUppercaseLetter(char c) {
+	return (c >= 'A' && c <= 'Z');
 }
