@@ -12,7 +12,7 @@
 String newString(char* text) {
 	/* Create space for the inital string */
 	String * str = calloc(1,sizeof(String));
-	char* newstr = calloc(1,strlen(text) + 1);
+	char* newstr = calloc(1,strlen(text)+ 1);
 	strcpy(newstr,text);
 	str->text = newstr; 
 
@@ -29,12 +29,14 @@ String newString(char* text) {
 	str->toUpperCase = &toUpperCase;
 	str->reverse = &reverse;
 	str->removeSpaces = &removeSpaces;
+	str->removeCharAt = &removeCharAt;
+	str->insertCharAt = &insertCharAt;
 
 	return *str;
 }
 
 char charAt(String * str, int i) {
-	if(i < 0 || i > (strlen(str->text) - 1)) return ERROR;
+	if(i < 0 || i > (length(str) - 1)) return ERROR;
 
 	else return str->text[i];
 }
@@ -57,10 +59,9 @@ void printString(String * str) {
 
 String * split(String * str, char* pattern) {
 	int i = 0;
-	char* newstr = malloc(strlen(str->text) + 1);
+	char newstr[length(str) + 1];
 	strcpy(newstr,str->text);
 	int numStrings = countStrings(newstr,pattern);
-	free(newstr);
 
 	String * arr = calloc(1,numStrings*sizeof(String));
 	char * pch = strtok(str->text,pattern);
@@ -76,9 +77,8 @@ String * split(String * str, char* pattern) {
 }
 
 String concat(String * str, String * append) {
-	char* newstr = calloc(1,strlen(str->text) + strlen(append->text) + 2);
-	strcat(newstr,str->text);
-	strcat(newstr,append->text);
+	char newstr[length(str) + length(append) + 2];
+	sprintf(newstr,"%s%s",str->text,append->text);
 
 	return newString(newstr);
 }
@@ -86,19 +86,20 @@ String concat(String * str, String * append) {
 String substring(String * str, int beginIndex,int endIndex) {
 	if(beginIndex < 0 || beginIndex >= length(str) || endIndex < beginIndex || endIndex >= length(str)) return *str;
 
-	char* newstr = calloc(1,length(str));
+	char * newstrptr;
+	char newstr[length(str) + 1];
 
 	strcpy(newstr,str->text);
 	newstr[endIndex + 1] = '\0';
-	newstr = newstr+beginIndex;
+	newstrptr = newstr+beginIndex;
 
-	return newString(newstr);
+	return newString(newstrptr);
 }
 
 String toLowerCase(String * str) {
-	char* newstr = calloc(1,length(str));
-	int i;
 	int len = length(str);
+	char newstr[len + 1];
+	int i;
 
 	for(i = 0; i < len; i++) {
 		if(isUppercaseLetter(str->text[i])) newstr[i] = (str->text[i] - ('A' - 'a'));
@@ -112,9 +113,9 @@ String toLowerCase(String * str) {
 }
 
 String toUpperCase(String * str) {
-	char* newstr = calloc(1,length(str));
 	int i;
 	int len = length(str);
+	char newstr[len + 1];
 
 	for(i = 0; i < len; i++) {
 		if(isLowercaseLetter(str->text[i])) newstr[i] = (str->text[i] + ('A' - 'a'));
@@ -127,8 +128,8 @@ String toUpperCase(String * str) {
 }
 
 String reverse(String * str) {
-	char * newstr = calloc(1,length(str) + 1);
 	int len = length(str);
+	char newstr[len + 1];
 	int i;
 	int k = len - 1;
 
@@ -144,8 +145,8 @@ String reverse(String * str) {
 }
 
 String removeSpaces(String * str) {
-	char * newstr = calloc(1,length(str) + 1);
 	int len = length(str);
+	char newstr[len + 1];
 	int i;
 	int index = 0;
 
@@ -157,6 +158,44 @@ String removeSpaces(String * str) {
 	}
 
 	newstr[index + 1] = '\0';
+
+	return newString(newstr);
+}
+
+String removeCharAt(String * str, int index) {
+	int len = length(str);
+	char newStr[len + 1];
+	int i;
+	int lastIndex = 0;
+	for(i = 0; i < len; i++) {
+		if(i != index) {
+			newStr[lastIndex] = str->text[i];
+			lastIndex++;
+		}
+	}
+	newStr[len - 1] = '\0';
+	return newString(newStr);
+}
+
+String insertCharAt(String * str, char c, int index) {
+	int len = length(str);
+	int i;
+	int lastIndex = 0;
+	if(index > len || len < 0) return *str;
+
+	char newstr[len + 2];
+
+	for(i = 0; i < len + 1; i++) {
+		if(i == index) {
+			newstr[i] = c;
+		}
+		else {
+			newstr[i] = str->text[lastIndex];
+			lastIndex++;
+		}
+	}
+	
+	newstr[len + 1] = '\0';
 
 	return newString(newstr);
 }

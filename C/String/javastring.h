@@ -23,6 +23,8 @@ typedef struct String {
 	struct String (*toUpperCase)(struct String * str);
 	struct String (*reverse)(struct String * str);
 	struct String (*removeSpaces)(struct String * str);
+	struct String (*removeCharAt)(struct String * str, int index);
+	struct String (*insertCharAt)(struct String * str, char c, int index);
 } String;
 
 /* Function Prototypes */
@@ -39,6 +41,8 @@ String toLowerCase(String * str);
 String toUpperCase(String * str);
 String reverse(String * str);
 String removeSpaces(String * str);
+String removeCharAt(String * str, int index);
+String insertCharAt(String * str, char c, int index);
 
 /* Utility Functions */
 int countStrings(char* str, char* pattern);
