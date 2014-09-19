@@ -3,7 +3,7 @@
 #include <string.h>
 #include "list.h"
 
-/* General Purpose list class developed by David Parker */
+/* General Purpose list "class" developed by David Parker */
 
 void listAdd(List * list, ListElem * newElem) {
 	if(list->head == NULL) {
@@ -77,8 +77,8 @@ ListElem * findByValue(List * list, long long int val) {
 		curr = curr->next;
 	}
 	return NULL;
-}
 
+}
 void createAndAdd(List * list, char name[], long long int val) {
 	ListElem * newElem = createNode(name,val);
 	listAdd(list,newElem);
