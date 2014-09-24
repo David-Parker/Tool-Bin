@@ -5,6 +5,8 @@ public class Control {
 	private String dataType;
 	private String command;
 	private String ringValue;
+	public final static String[] dataTypes = {"double","integer","int","string","boolean","bool","ring"};
+	public final static int NUM_DATA_TYPES = 7;
 	
 	public Control(String type, String name, String dataType, String command, String ringValue) {
 		this.type = type;

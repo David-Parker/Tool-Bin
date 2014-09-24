@@ -3,8 +3,9 @@ import java.util.ArrayList;
 public class CompileError {
 	private static boolean forceContinue;
 	private static ArrayList<String> errors;
-	public static final int CONTROL_ERROR_1 = 0;
-	public static final int CONTROL_ERROR_2 = 1;
+	public static final int ERROR_1 = 0;
+	public static final int ERROR_2 = 1;
+
 	
 	public CompileError() {
 		forceContinue = false;
@@ -24,10 +25,18 @@ public class CompileError {
 			else if (arg1 < 0) message("Extra brace found.");
 		}
 		else if(type.equals("Control")) {
-			if(arg2 == CONTROL_ERROR_1)
+			if(arg2 == ERROR_1)
 				message("Control found without a Vi at line " + arg1 + ".");
-			else if (arg2 == CONTROL_ERROR_2)
+			else if (arg2 == ERROR_2)
 				message("Invalid control name at line " + arg1 + ".");
+		}
+		
+		else if(type.equals("Folder")) {
+			if(arg2 == ERROR_1)
+				message("Folders cannot have empty names at line " + arg1 + ".");
+			else if (arg2 == ERROR_2)
+				message("Duplicate folder name in the same scope found at line " + arg1 + ".");
+			
 		}
 	}
 	
@@ -50,6 +59,10 @@ public class CompileError {
 	
 	public void force() {
 		forceContinue = true;
+	}
+	
+	public int numErrors() {
+		return errors.size();
 	}
 	
 	public void printErrors() {

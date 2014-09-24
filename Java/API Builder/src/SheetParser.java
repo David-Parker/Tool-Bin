@@ -5,6 +5,8 @@ public class SheetParser {
 	public static final char leftDelim = '{';
 	public static final char rightDelim = '}';
 	public static final char comment = '#';
+	public static String[] keywords = {"prefix","identifier","technology","manufacturer"};
+	public static final int NUM_OF_KEYWORDS = 4;
 	private static int numDelims;
 	private static Folder root;
 	private static Folder currFolder;
@@ -61,10 +63,16 @@ public class SheetParser {
 			for(int j = 0; j < cols; j++) {
 				if(data[i][j] != null) {
 					/* Read the formatting */
-					if(data[i][j].charAt(0) == comment) continue;
+					if(isComment(data[i][j]) || isKeyword(data[i][j])) continue;
 					
 					if(data[i][j].charAt(0) == leftDelim) {
 						Folder newFolder = new Folder(parseFolderName(data[i][j]),currFolder,i);
+						if(newFolder.getName().equals("")) {
+							ce.checkError("Folder",i + 1,CompileError.ERROR_1);
+						}
+						
+						/* Make sure that this folder doesn't currently exist in this scope */
+						checkFolderName(newFolder.getName(), i + 1);
 						currFolder.subFolders.add(newFolder);
 						currFolder = newFolder;
 						numDelims++;
@@ -80,9 +88,9 @@ public class SheetParser {
 					else if(currFolder != root && (data[i][j].charAt(0) != leftDelim)) {
 						String control = new String("");
 						String command = new String("");
-						if(j + 1 < cols && data[i][j + 1] != null)
+						if(j + 1 < cols && data[i][j + 1] != null && !isComment(data[i][j+ 1]))
 							control = data[i][j + 1];
-						if(j + 2 < cols && data[i][j + 2] != null)
+						if(j + 2 < cols && data[i][j + 2] != null && !isComment(data[i][j+ 2]))
 							command = data[i][j+2];
 						parseVi(data[i][j],control,command, i + 1);
 						break;
@@ -91,7 +99,8 @@ public class SheetParser {
 			}
 		}
 		ce.checkError("Delim", numDelims, currFolder.row + 1);
-		printFolders(root,0);
+		if(ce.numErrors() == 0)
+			printFolders(root,0);
 	}
 	
 	public static void parseVi(String name, String control, String command, int row) {
@@ -109,13 +118,18 @@ public class SheetParser {
 					newVi.controls.add(cont);
 				}
 				
+				else if(control.toLowerCase().equals("none")) {
+					Control cont = new Control("none","","",command,"");
+					newVi.controls.add(cont);
+				}
+				
 				else if(!control.equals("")) {
-					ce.checkError("Control", row, CompileError.CONTROL_ERROR_2);
+					ce.checkError("Control", row, CompileError.ERROR_2);
 				}
 		}
 		/* We found a control before finding it's corresponding Vi */
 		else {
-			ce.checkError("Control", row, CompileError.CONTROL_ERROR_1);
+			ce.checkError("Control", row, CompileError.ERROR_1);
 		}
 	}
 
@@ -125,22 +139,27 @@ public class SheetParser {
 		int count = 0;
 		
 		if(!isValidControl(control)) {
-			ce.checkError("Control", row, CompileError.CONTROL_ERROR_2);
+			ce.checkError("Control", row, CompileError.ERROR_2);
 			return null;
 		}
 		
 		StringTokenizer strTok = new StringTokenizer(control, ":");
 		
 		while(strTok.hasMoreTokens()) {
-			strs[count] = strTok.nextToken();
+			strs[count] = strTok.nextToken().trim();
 			count++;
 		}
 		
-		if(strs[0].equals("in")) strs[0] = "input";
-		else if(strs[0].equals("out")) strs[0] = "output";
+		if(strs[0].toLowerCase().equals("in")) strs[0] = "input";
+		else if(strs[0].toLowerCase().equals("out")) strs[0] = "output";
 		/* Not a recognized type */
 		else {
-			ce.checkError("Control", row, CompileError.CONTROL_ERROR_2);
+			ce.checkError("Control", row, CompileError.ERROR_2);
+			return null;
+		}
+		
+		if(strs[2] == null || !isValidDataType(strs[2])) {
+			ce.checkError("Control", row, CompileError.ERROR_2);
 			return null;
 		}
 		
@@ -148,6 +167,13 @@ public class SheetParser {
 		if(strs[3] == null) strs[3] = "";
 		
 		return new Control(strs[0],strs[1],strs[2],command,strs[3]);
+	}
+	
+	public static void checkFolderName(String name, int row) {
+		for(Folder f: currFolder.subFolders) {
+			if(name.toLowerCase().equals(f.getName().toLowerCase())) 
+				ce.checkError("Folder", row, CompileError.ERROR_2);
+		}
 	}
 	
 	public static boolean isValidControl(String name) {
@@ -160,6 +186,27 @@ public class SheetParser {
 		
 		return (count >= 2 && count < 4);
 	}
+	
+	public static boolean isValidDataType(String str) {
+		for(int i = 0; i < Control.NUM_DATA_TYPES; i++) {
+			if(str.toLowerCase().equals(Control.dataTypes[i]))
+				return true;
+		}
+		return false;
+	}
+	
+	public static boolean isComment(String str) {
+		return str.charAt(0) == comment;
+	}
+	
+	public static boolean isKeyword(String str) {
+		for(int i = 0; i < NUM_OF_KEYWORDS; i++) {
+			if(str.toLowerCase().equals(keywords[i]))
+				return true;
+		}
+		return false;
+	}
+	
 	public static String parseFolderName(String name) {
 		String newStr = new String("");
 		for(int i = 0; i < name.length(); i++) {
@@ -218,7 +265,10 @@ public class SheetParser {
 			for(Control c: v.controls) {
 				for(int i = 0; i < tabs; i++)
 					System.out.print("   ");
-				System.out.println(" >" + c.getName() + " = " + c.getCommand());
+				if(c.getType().equals("input"))
+					System.out.println(" > " + c.getName() + " = " + c.getCommand());
+				else 
+					System.out.println(" < " + c.getName() + " = " + c.getCommand());
 			}
 		}
 		
