@@ -9,6 +9,7 @@ public class Folder {
 	
 	public Folder(String name, Folder parent, int row) {
 		subFolders = new ArrayList<Folder>();
+		vis = new ArrayList<Vi>();
 		this.name = name;
 		this.parent = parent;
 		this.row = row;
