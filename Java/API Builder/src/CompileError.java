@@ -38,6 +38,10 @@ public class CompileError {
 				message("Duplicate folder name in the same scope found at line " + arg1 + ".");
 			
 		}
+		
+		else if(type.equals("Vi")) {
+			message("Duplicate Vi name at line " + arg1 + ".");
+		}
 	}
 	
 	public void checkError(String type, int arg1, String str) {

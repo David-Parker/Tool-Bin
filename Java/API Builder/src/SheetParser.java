@@ -11,18 +11,21 @@ public class SheetParser {
 	private static Folder root;
 	private static Folder currFolder;
 	private static CompileError ce;
+	private static ArrayList<Vi> allVis;
 	
 	public SheetParser() {
 		numDelims = 0;
-		root = new Folder("Root",null,-1);
+		root = new Folder("Public",null,-1, "Public");
 		currFolder = root;
 		ce = new CompileError();
+		allVis = new ArrayList<Vi>();
 	}
 	
-	public void parse(String[][] data, int rows, int cols) {
+	public Folder parse(String[][] data, int rows, int cols) {
 		parseInstrumentData(data,rows,cols);
 		parseFolders(data,rows,cols);
 		ce.printErrors();
+		return root;
 	}
 	
 	public static void parseInstrumentData(String[][] data, int rows, int cols) {
@@ -66,7 +69,8 @@ public class SheetParser {
 					if(isComment(data[i][j]) || isKeyword(data[i][j])) continue;
 					
 					if(data[i][j].charAt(0) == leftDelim) {
-						Folder newFolder = new Folder(parseFolderName(data[i][j]),currFolder,i);
+						String name = parseFolderName(data[i][j]);
+						Folder newFolder = new Folder(name,currFolder,i,currFolder.getPath() + "\\" + name);
 						if(newFolder.getName().equals("")) {
 							ce.checkError("Folder",i + 1,CompileError.ERROR_1);
 						}
@@ -99,16 +103,23 @@ public class SheetParser {
 			}
 		}
 		ce.checkError("Delim", numDelims, currFolder.row + 1);
-		if(ce.numErrors() == 0)
-			printFolders(root,0);
+		//if(ce.numErrors() == 0)
+			//printFolders(root,0);
 	}
 	
 	public static void parseVi(String name, String control, String command, int row) {
 		/* Check if this is a Vi name and not a control name */
 		if(!(name.length() >= 3 && name.substring(0,3).toLowerCase().equals("in:")) &&
 		   !(name.length() >= 4 && name.substring(0,4).toLowerCase().equals("out:"))) {
+				checkViName(name,row);
 				Vi newVi = new Vi(name);
 				currFolder.vis.add(newVi);
+				
+				/* List of all implemented Vis so we don't duplicate them */
+				allVis.add(newVi);
+				
+				/* Check if this new Vi is a template Vi */
+				checkSource(newVi);
 				
 				/* Parse the control */
 				if(control.length() >= 3 && control.substring(0,3).toLowerCase().equals("in:") ||
@@ -174,6 +185,24 @@ public class SheetParser {
 			if(name.toLowerCase().equals(f.getName().toLowerCase())) 
 				ce.checkError("Folder", row, CompileError.ERROR_2);
 		}
+	}
+	
+	public static void checkViName(String name, int row) {
+		for(Vi v: allVis) {
+			if(name.equals(v.getName())) {
+				ce.checkError("Vi", row, 0);
+			}
+		}
+	}
+	
+	public static void checkSource(Vi newVi) {
+		for(int i =0 ; i < Vi.NUM_TEMPLATE_VIS; i++) {
+			if(newVi.getName().toLowerCase().equals(Vi.templateVis[i].toLowerCase())) {
+				newVi.setSource("Template");
+			}
+		}
+		if(!(newVi.getSource().equals("Template")))
+			newVi.setSource("Customized");
 	}
 	
 	public static boolean isValidControl(String name) {
