@@ -1,18 +1,17 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 
 
 public class XMLWriter {
 	private static PrintStream specFile;
 	private static Folder root;
+	private static CompileError ce;
 	
-	public static final boolean toConsole = true;
+	public static final boolean toConsole = false;
 	
 	public XMLWriter(String file, Folder root) {
 		this.root = root;
+		ce = new CompileError();
 		
 		if(toConsole)
 			specFile = System.out;
@@ -31,6 +30,12 @@ public class XMLWriter {
 		writeInstrumentInfo();
 		writeFolders(root);
 		write(closeTag("General"));
+		writeFunctions();
+		write(closeTag("Interface"));
+		write(closeTag("API"));
+		
+		/* Write out commands */
+		writeCommands();
 		write(closeTag("IDSpecification"));
 	}
 	
@@ -56,9 +61,16 @@ public class XMLWriter {
 	}
 	
 	public static void writeMetaData() {
+		Instrument instr = Instrument.getInstance();
 		write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>");
 		write("<!-- This Driver Specification file was created with API Builder -->");
 		write("<IDSpecification xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" Author=\"Liping\" Company=\"String\" Fax=\"String\" Phone=\"String\" Version=\"String\" xsi:noNamespaceSchemaLocation=\"ID%20Specification.xsd\">");
+		AttributeList al = new AttributeList();
+		al.add("Identifier",instr.identifier);
+		al.add("Template","C:\\Program Files\\National Instruments\\LabVIEW 8.6\\instr.lib\\_Template - Generic");
+		write(createTag("Application",al.attributes,"",false));
+		write(closeTag("Application"));
+		//write("<Application Identifier=\"" + instr.identifier + "\" Template=/\"C:/Program Files/National Instruments/LabVIEW 8.6/instr.lib/_Template - Generic\"/>");
 		write("<ModificationHistory>");
 		write("<Creation Application=\"text\" Comments=\"String\" Date=\"1967-08-13\"/>");
 		write("<Modification Application=\"String\" Comments=\"\" Date=\"2014-09-25\"/>");
@@ -88,6 +100,65 @@ public class XMLWriter {
 		
 		for(Folder f: fold.subFolders) {
 			writeFoldersRecurse(f);
+		}
+	}
+	
+	public static void writeFunctions() {
+		write("<API Version=\"String\">");
+		write("<Interface Identifier=\"String\">");
+		writeTemplateFunctions();
+	}
+	
+	public static void writeTemplateFunctions() {
+		try {
+			FileReader reader = new FileReader("data/template.data");
+			BufferedReader br = new BufferedReader(reader);
+			String line;
+			
+			while((line = br.readLine()) != null) {
+				write(line);
+			}
+			
+			br.close();
+		}
+		
+		catch(FileNotFoundException ex) {
+			/* Missing template.data file */
+			ce.checkError("File",CompileError.ERROR_1,0);
+		}
+		
+		catch(IOException ex) {
+			/* Corrupted Template data file */
+			ce.checkError("File",CompileError.ERROR_2,0);
+		}
+	}
+	
+	public static void writeCommands() {
+		AttributeList al = new AttributeList();
+		al.add("NumberOfCommands","" + root.numCommands);
+		write(createTag("Commands",al.attributes,"",false));
+		writeCommandsRecurse(root,al);
+		//write("<Command Identifier=\"Test/" NumberOfImplentation=1)
+		write("<Command Identifier=\"*IDN?\" NumberOfImplementation=\"1\"/><Command Identifier=\"*RST\" NumberOfImplementation=\"1\"/><Command Identifier=\"*TST?\" NumberOfImplementation=\"1\"/><Command Identifier=\":SYST:ERR?\" NumberOfImplementation=\"1\"/>");
+		write(closeTag("Commands"));
+	}
+	
+	public static void writeCommandsRecurse(Folder fold, AttributeList al) {
+		if(fold == null) return;
+		
+		for(Vi v : fold.vis) {
+			for(Control c: v.controls) {
+				if(!c.getCommand().equals("")) {
+					al.clear();
+					al.add("Identifier",c.getCommand());
+					al.add("NumberOfImplementation","1");
+					write(createTag("Command",al.attributes,"",true));
+				}
+			}
+		}
+		
+		for(Folder f: fold.subFolders) {
+			writeCommandsRecurse(f,al);
 		}
 	}
 	

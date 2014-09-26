@@ -42,6 +42,14 @@ public class CompileError {
 		else if(type.equals("Vi")) {
 			message("Duplicate Vi name at line " + arg1 + ".");
 		}
+		
+		else if(type.equals("File")) {
+			if(arg1 == ERROR_1)
+				message("Missing template.data file, please re-download this file and verify it is in your data folder.");
+			
+			else if(arg1 == ERROR_2)
+				message("Possibly corrupt template.data file, re-download this file and verify it is in your data folder.");
+		}
 	}
 	
 	public void checkError(String type, int arg1, String str) {
