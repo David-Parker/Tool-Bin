@@ -103,7 +103,7 @@ public class XMLWriter {
 	public static void writeFunctions() {
 		write("<API Version=\"String\">");
 		write("<Interface Identifier=\"String\">");
-		//writeTemplateFunctions();
+		writeTemplateFunctions();
 		writeCustomFunctions();
 	}
 	
@@ -155,13 +155,16 @@ public class XMLWriter {
 			
 			al.clear();
 			al.add("TotalNumber","" + v.controls.size());
-			write(createTag("Parameters",al.attributes,"",true));
+			write(createTag("Parameters",al.attributes,"",false));
 			
 			for(Control c: v.controls) {
 				writeControl(c,al);
 				//System.out.println(v.getFolder().getPath());
 				//System.out.println(c.getDataType());
 			}
+			//write("<Parameters TotalNumber=\"0\"/>");
+			write(closeTag("Parameters"));
+			write("<Commands TotalNumber=\"0\"/>");
 			
 			write(closeTag("Function"));
 		}
@@ -186,15 +189,41 @@ public class XMLWriter {
 		
 		writeControlDataType(c,al);
 		
-		write(closeTag("DataType"));
 		write(closeTag("DataObject"));
+		write(createTag("Description",null,"",true));
+		write(createTag("Unit",null,"",true));
 		write(closeTag("Parameter"));
 	}
 	
 	public static void writeControlDataType(Control c, AttributeList al) {
+		al.clear();
+		
+		if(c.getDataType().equals("I32")) {
+			writeNumericControlTag(c,al);
+		}
+		
+		else if(c.getDataType().equals("DBL")) {
+			writeNumericControlTag(c,al);
+		}
+		
+		else if(c.getDataType().equals("String")) {
+			/* TODO Add Other Cases */
+		}
 		
 	}
 	
+	public static void writeNumericControlTag(Control c, AttributeList al) {
+		al.add("Predefined","1");
+		al.add("Type",c.getDataType());
+		write(createTag("Numeric",al.attributes,"",true));
+		write(closeTag("DataType"));
+		al.clear();
+		
+		al.add("Class","Numeric");
+		al.add("DefaultValue","0");
+		al.add("Label",c.getName());
+		write(createTag("Control",al.attributes,"",true));
+	}
 	public static void writeCommands() {
 		AttributeList al = new AttributeList();
 		al.add("NumberOfCommands","" + root.numCommands);
