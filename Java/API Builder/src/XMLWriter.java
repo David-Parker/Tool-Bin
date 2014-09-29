@@ -70,7 +70,6 @@ public class XMLWriter {
 		al.add("Template","C:\\Program Files\\National Instruments\\LabVIEW 8.6\\instr.lib\\_Template - Generic");
 		write(createTag("Application",al.attributes,"",false));
 		write(closeTag("Application"));
-		//write("<Application Identifier=\"" + instr.identifier + "\" Template=/\"C:/Program Files/National Instruments/LabVIEW 8.6/instr.lib/_Template - Generic\"/>");
 		write("<ModificationHistory>");
 		write("<Creation Application=\"text\" Comments=\"String\" Date=\"1967-08-13\"/>");
 		write("<Modification Application=\"String\" Comments=\"\" Date=\"2014-09-25\"/>");
@@ -82,7 +81,7 @@ public class XMLWriter {
 		write(createTag("General",null,"",false));
 		write(createTag("Prefix",null,inst.prefix,true));
 		write(createTag("Identifier",null,inst.identifier,true));
-		write(createTag("Technology",null,inst.technology,true));
+		write(createTag("Technology",null,"LabVIEW PNP",true));
 		write(createTag("Manufacturer",null,inst.manufacturer,true));
 		write("<InstrumentModels><InstrumentModel/></InstrumentModels><CommunicationInterface><IndustoryBus>USB</IndustoryBus></CommunicationInterface><ModelTested><InstrumentModel/></ModelTested><FirmwareTested><Manufacturer/><InstrumentModel/><SerialNO/><BuildVersion/></FirmwareTested><InterfaceTested><IndustoryBus>USB</IndustoryBus></InterfaceTested>");
 	}
@@ -93,9 +92,7 @@ public class XMLWriter {
 		write(closeTag("Folders"));
 	}
 	
-	public static void writeFoldersRecurse(Folder fold) {
-		if(fold == null) return;
-		
+	public static void writeFoldersRecurse(Folder fold) {	
 		write(createTag("FolderPath",null,fold.getPath(),true));
 		
 		for(Folder f: fold.subFolders) {
@@ -106,7 +103,8 @@ public class XMLWriter {
 	public static void writeFunctions() {
 		write("<API Version=\"String\">");
 		write("<Interface Identifier=\"String\">");
-		writeTemplateFunctions();
+		//writeTemplateFunctions();
+		writeCustomFunctions();
 	}
 	
 	public static void writeTemplateFunctions() {
@@ -133,6 +131,70 @@ public class XMLWriter {
 		}
 	}
 	
+	public static void writeCustomFunctions() {
+		AttributeList al = new AttributeList();
+		writeCustomFunctionsRecurse(root,al);
+	}
+	
+	public static void writeCustomFunctionsRecurse(Folder fold, AttributeList al) {
+		for(Vi v: fold.vis) {
+			al.clear();
+			al.add("Identifier",v.getName());
+			al.add("Source","Customized");
+			write(createTag("Function",al.attributes,"",false));
+			
+			write(createTag("Flag",null,"",false));
+			write(createTag("DesignerFlag",null,"Configuration/Action-Status",true));
+			write(closeTag("Flag"));
+			
+			write(createTag("Path",null,v.getFolder().getPath(),true));
+			write(createTag("Description",null,"",true));
+			write(createTag("ErrorQuery",null,"false",true));
+			write(createTag("ManualUpdate",null,"false",true));
+			write(createTag("BlockDiagramComments",null,"",true));
+			
+			al.clear();
+			al.add("TotalNumber","" + v.controls.size());
+			write(createTag("Parameters",al.attributes,"",true));
+			
+			for(Control c: v.controls) {
+				writeControl(c,al);
+				//System.out.println(v.getFolder().getPath());
+				//System.out.println(c.getDataType());
+			}
+			
+			write(closeTag("Function"));
+		}
+		
+		for(Folder f: fold.subFolders) {
+			writeCustomFunctionsRecurse(f,al);
+		}
+	}
+	
+	public static void writeControl(Control c, AttributeList al) {
+		al.clear();
+		al.add("Access","RW");
+		al.add("Extension","true");
+		al.add("IDValue","");
+		al.add("Identifier",c.getName());
+		al.add("InputOutput",c.getType());
+		write(createTag("Parameter",al.attributes,"",false));
+		al.clear();
+		al.add("NativeDescriptor","");
+		write(createTag("DataObject",al.attributes,"",false));
+		write(createTag("DataType",null,"",false));
+		
+		writeControlDataType(c,al);
+		
+		write(closeTag("DataType"));
+		write(closeTag("DataObject"));
+		write(closeTag("Parameter"));
+	}
+	
+	public static void writeControlDataType(Control c, AttributeList al) {
+		
+	}
+	
 	public static void writeCommands() {
 		AttributeList al = new AttributeList();
 		al.add("NumberOfCommands","" + root.numCommands);
@@ -144,8 +206,6 @@ public class XMLWriter {
 	}
 	
 	public static void writeCommandsRecurse(Folder fold, AttributeList al) {
-		if(fold == null) return;
-		
 		for(Vi v : fold.vis) {
 			for(Control c: v.controls) {
 				if(!c.getCommand().equals("")) {

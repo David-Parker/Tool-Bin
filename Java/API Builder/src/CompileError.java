@@ -5,6 +5,7 @@ public class CompileError {
 	private static ArrayList<String> errors;
 	public static final int ERROR_1 = 0;
 	public static final int ERROR_2 = 1;
+	public static final int ERROR_3 = 2;
 
 	
 	public CompileError() {
@@ -29,6 +30,8 @@ public class CompileError {
 				message("Control found without a Vi at line " + arg1 + ".");
 			else if (arg2 == ERROR_2)
 				message("Invalid control name at line " + arg1 + ".");
+			else if (arg2 == ERROR_3)
+				message("Duplicate control name in the same Vi at line " + arg1 + ".");
 		}
 		
 		else if(type.equals("Folder")) {

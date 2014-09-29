@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class Vi {
 	private String name;
 	private String source;
+	private Folder folder;
 	public ArrayList<Control> controls;
 	public static String[] templateVis = {"Self-Test","Self Test","Revision Query","Reset","Error Query","VI Tree","Close","Initialize"};
 	public static final int NUM_TEMPLATE_VIS = 8;
@@ -23,5 +24,13 @@ public class Vi {
 	
 	public void setSource(String type) {
 		source = type;
+	}
+	
+	public void setFolder(Folder fold) {
+		folder = fold;
+	}
+	
+	public Folder getFolder() {
+		return folder;
 	}
 }
