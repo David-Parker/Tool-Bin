@@ -57,6 +57,7 @@ public class SheetReader {
 		    }
 		    cols = largestCol;
 		    file.close();
+		    workbook.close();
 			return data;
 		} 
 		

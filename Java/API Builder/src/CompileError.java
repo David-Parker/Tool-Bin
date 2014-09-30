@@ -91,5 +91,31 @@ public class CompileError {
 			}
 		}	
 	}
-
+	
+	public static void printFolders(Folder f, int tabs) {
+		for(int i = 0; i < tabs; i++)
+			System.out.print("   ");
+		
+		System.out.println(f.getName());
+		
+		for(Vi v: f.vis) {
+			for(int i = 0; i < tabs; i++)
+				System.out.print("   ");
+			
+			System.out.println("--" + v.getName());
+			
+			for(Control c: v.controls) {
+				for(int i = 0; i < tabs; i++)
+					System.out.print("   ");
+				if(c.getType().equals("input"))
+					System.out.println(" > " + c.getName() + " = " + c.getCommand());
+				else 
+					System.out.println(" < " + c.getName() + " = " + c.getCommand());
+			}
+		}
+		
+		for(Folder nf: f.subFolders) {
+			printFolders(nf,tabs + 1);
+		}
+	}
 }

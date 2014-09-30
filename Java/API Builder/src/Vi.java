@@ -33,4 +33,17 @@ public class Vi {
 	public Folder getFolder() {
 		return folder;
 	}
+	
+	public boolean checkSource() {
+		for(int i =0 ; i < Vi.NUM_TEMPLATE_VIS; i++) {
+			if(name.toLowerCase().equals(Vi.templateVis[i].toLowerCase())) {
+				source = "Template";
+				return true;
+			}
+		}
+		if(!(source.equals("Template")))
+			source = "Customized";
+		
+		return false;
+	}
 }

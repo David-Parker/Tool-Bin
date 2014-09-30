@@ -9,8 +9,8 @@ public class XMLWriter {
 	
 	public static final boolean toConsole = false;
 	
-	public XMLWriter(String file, Folder root) {
-		this.root = root;
+	public XMLWriter(String file, Folder fold) {
+		root = fold;
 		ce = new CompileError();
 		
 		if(toConsole)
@@ -159,11 +159,14 @@ public class XMLWriter {
 			
 			for(Control c: v.controls) {
 				writeControl(c,al);
-				//System.out.println(v.getFolder().getPath());
-				//System.out.println(c.getDataType());
 			}
-			//write("<Parameters TotalNumber=\"0\"/>");
+			
 			write(closeTag("Parameters"));
+			
+			/* TODO Add command parsing here */
+			for(Control c: v.controls) {
+				System.out.println(c.getCommand());
+			}
 			write("<Commands TotalNumber=\"0\"/>");
 			
 			write(closeTag("Function"));
@@ -199,37 +202,52 @@ public class XMLWriter {
 		al.clear();
 		
 		if(c.getDataType().equals("I32")) {
-			writeNumericControlTag(c,al);
+			writeControlTag(c,al);
 		}
 		
 		else if(c.getDataType().equals("DBL")) {
-			writeNumericControlTag(c,al);
+			writeControlTag(c,al);
 		}
 		
 		else if(c.getDataType().equals("String")) {
-			/* TODO Add Other Cases */
+			writeControlTag(c,al);
 		}
 		
 	}
 	
-	public static void writeNumericControlTag(Control c, AttributeList al) {
-		al.add("Predefined","1");
-		al.add("Type",c.getDataType());
-		write(createTag("Numeric",al.attributes,"",true));
+	public static void writeControlTag(Control c, AttributeList al) {
+
+		if(c.getDataType().equals("DBL") || c.getDataType().equals("I32")) {
+			al.add("Predefined","1");
+			al.add("Type",c.getDataType());
+			write(createTag("Numeric",al.attributes,"",true));
+		}
+		
+		else if(c.getDataType().equals("String")) {
+			al.add("Dimension", "-1");
+			al.add("Encoding","ASCII");
+			write(createTag("String",al.attributes,"",true));
+		}
+		
 		write(closeTag("DataType"));
 		al.clear();
 		
-		al.add("Class","Numeric");
+		if(c.getDataType().equals("DBL") || c.getDataType().equals("I32")) 
+			al.add("Class","Numeric");
+		
+		else if(c.getDataType().equals("String"))
+			al.add("Class","String");
+		
 		al.add("DefaultValue","0");
 		al.add("Label",c.getName());
 		write(createTag("Control",al.attributes,"",true));
 	}
+	
 	public static void writeCommands() {
 		AttributeList al = new AttributeList();
 		al.add("NumberOfCommands","" + root.numCommands);
 		write(createTag("Commands",al.attributes,"",false));
 		writeCommandsRecurse(root,al);
-		//write("<Command Identifier=\"Test/" NumberOfImplentation=1)
 		write("<Command Identifier=\"*IDN?\" NumberOfImplementation=\"1\"/><Command Identifier=\"*RST\" NumberOfImplementation=\"1\"/><Command Identifier=\"*TST?\" NumberOfImplementation=\"1\"/><Command Identifier=\":SYST:ERR?\" NumberOfImplementation=\"1\"/>");
 		write(closeTag("Commands"));
 	}
