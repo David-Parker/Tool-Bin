@@ -7,6 +7,7 @@ public class XMLWriter {
 	private static PrintStream specFile;
 	private static Folder root;
 	private static CompileError ce;
+	public static boolean generateTemplate = true;
 	
 	public static final boolean toConsole = false;
 	
@@ -104,7 +105,10 @@ public class XMLWriter {
 	public static void writeFunctions() {
 		write("<API Version=\"String\">");
 		write("<Interface Identifier=\"String\">");
-		writeTemplateFunctions();
+		
+		if(generateTemplate)
+			writeTemplateFunctions();
+		
 		writeCustomFunctions();
 	}
 	
@@ -159,24 +163,61 @@ public class XMLWriter {
 			write(createTag("Parameters",al.attributes,"",false));
 			
 			for(Control c: v.controls) {
-				writeControl(c,al);
+				/* This is just a command, user specified none for the control */
+				if(!c.getName().equals(""))
+					writeControl(c,al);
 			}
 			
 			write(closeTag("Parameters"));
+			//write("<Parameters TotalNumber=\"0\"/>");
 			
 
 			/* TODO Continue After bug-fixes */
+			/* TODO Add command parsing here */
+			for(Control c: v.controls) {
+				//System.out.println(c.getCommand().getName());
+			}
 			
-//			for(Iterator<Control> i = v.controls.iterator(); i.hasNext();) {
-//				Control curr = i.next();
-//				System.out.println(curr.getName() + " = " + curr.getCommand().controlsFound);
-//				for(int j = 0; j < curr.getCommand().controlsFound - 1; j++) {
-//					i.next();
-//				}
-//				//System.out.println(curr.getName());
-//			}
+			int numCommands = getNumberOfCommands(v);;
 			
-			write("<Commands TotalNumber=\"0\"/>");
+			//write("<Commands TotalNumber=\"0\"/>");
+			
+			al.clear();
+			al.add("TotalNumber","" + numCommands);
+			write(createTag("Commands",al.attributes,"",false));
+			
+			for(Iterator<Control> i = v.controls.iterator(); i.hasNext();) {
+				Control curr = i.next();
+				Control multiLineControl = curr;
+				ArrayList<Control> controls = getMultiLineControls(v, curr);
+				
+				al.clear();
+				al.add("Identifier",curr.getCommand().getName());
+				al.add("Implementation","1");
+				write(createTag("Command",al.attributes,"",false));
+				write(createTag("Description",null,"",true));
+				write(createTag("PolishedCMD",null,curr.getCommand().getPolishedCommand(controls),true));
+				write(createTag("FormattedWrite",null,"",false));
+				write(createTag("FormattedCmd",null,curr.getCommand().getFormattedCommand(controls),true));
+				
+				/* Just write the command without a control */
+				if(!curr.getName().equals("")) {
+					writeCommandParameter(curr);
+				}
+				
+				for(int j = 0; j < curr.getCommand().controlsFound - 1; j++) {
+					multiLineControl = i.next();
+					writeCommandParameter(multiLineControl);
+				}
+				
+				write(closeTag("FormattedWrite"));
+				write(closeTag("Command"));
+				//System.out.println(curr.getName() + " = " + curr.getCommand().controlsFound);
+
+				//System.out.println(curr.getName());
+			}
+	
+			write(closeTag("Commands"));
 			
 			write(closeTag("Function"));
 		}
@@ -184,6 +225,39 @@ public class XMLWriter {
 		for(Folder f: fold.subFolders) {
 			writeCustomFunctionsRecurse(f,al);
 		}
+	}
+	
+	public static int getNumberOfCommands(Vi v) {
+		int num = 0;
+		for(Iterator<Control> i = v.controls.iterator(); i.hasNext();) {
+			Control curr = i.next();
+			num++;
+			for(int j = 0; j < curr.getCommand().controlsFound - 1; j++) {
+				i.next();
+			}
+		}
+		return num;
+	}
+	
+	public static ArrayList<Control> getMultiLineControls(Vi v, Control c) {
+		ArrayList<Control> controls = new ArrayList<Control>();
+		controls.add(c);
+		
+		for(Iterator<Control> i = v.controls.iterator(); i.hasNext();) {
+			if(i.next() == c) {
+				for(int j = 0; j < c.getCommand().controlsFound - 1; j++) {
+					controls.add(i.next());
+				}
+			}
+		}
+		
+		return controls;
+	}
+	
+	public static void writeCommandParameter(Control c) {
+		write(createTag("ParamIdentifier",null,c.getName(),true));
+		write(createTag("StartOffset",null,"" + c.startOffset,true));
+		write(createTag("EndOffset",null,"" + c.endOffset,true));
 	}
 	
 	public static void writeControl(Control c, AttributeList al) {
@@ -262,9 +336,11 @@ public class XMLWriter {
 	}
 	
 	public static void writeCommandsRecurse(Folder fold, AttributeList al) {
+		ArrayList<String> commandsWritten = new ArrayList<String>();
 		for(Vi v : fold.vis) {
 			for(Control c: v.controls) {
-				if(!c.getCommand().getName().equals("")) {
+				if(!c.getCommand().getName().equals("") && !commandIsWritten(commandsWritten,c.getCommand().getName())) {
+					commandsWritten.add(c.getCommand().getName());
 					al.clear();
 					al.add("Identifier",c.getCommand().getName());
 					al.add("NumberOfImplementation","1");
@@ -276,6 +352,14 @@ public class XMLWriter {
 		for(Folder f: fold.subFolders) {
 			writeCommandsRecurse(f,al);
 		}
+	}
+	
+	public static boolean commandIsWritten(ArrayList<String> commandsWritten, String name) {
+		for(String s: commandsWritten) {
+			if(s.equals(name))
+				return true;
+		}
+		return false;
 	}
 	
 	public static void writeln(String str) {

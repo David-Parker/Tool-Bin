@@ -7,6 +7,8 @@ public class Control {
 	private String ringValue;
 	public final static String[] dataTypes = {"double","integer","int","string","boolean","bool","ring"};
 	public final static int NUM_DATA_TYPES = 7;
+	public int startOffset;
+	public int endOffset;
 	
 	public Control(String type, String name, String dataType, Command command, String ringValue, int row) {
 		this.command = command;
@@ -14,6 +16,8 @@ public class Control {
 		this.name = name;
 		this.dataType = dataType;
 		this.ringValue = ringValue;
+		startOffset = 0;
+		endOffset = 0;
 	}
 	
 	public String getName() {

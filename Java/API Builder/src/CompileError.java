@@ -116,10 +116,10 @@ public class CompileError {
 			for(Control c: v.controls) {
 				for(int i = 0; i < tabs; i++)
 					System.out.print("   ");
-				if(c.getType().equals("input"))
-					System.out.println(" > " + c.getName() + " = " + c.getCommand());
+				if(c.getType().equals("INPUT"))
+					System.out.println(" > " + c.getName() + " = " + c.getCommand().getName());
 				else 
-					System.out.println(" < " + c.getName() + " = " + c.getCommand());
+					System.out.println(" < " + c.getName() + " = " + c.getCommand().getName());
 			}
 		}
 		

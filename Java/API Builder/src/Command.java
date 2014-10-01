@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 
 public class Command {
 	private String name;
@@ -5,6 +7,7 @@ public class Command {
 	public int controlsFound;
 	public static Command currCommand;
 	public int row;
+	public String polishedCommand;
 	
 	public Command(String name, int row) {
 		/* Check if the user specified a multi-control command */
@@ -48,5 +51,80 @@ public class Command {
 			CompileError ce = new CompileError();
 			ce.checkError("Command", row, CompileError.ERROR_3);
 		}
+	}
+	
+	public String getFormattedCommand(ArrayList<Control> controls) {
+		String formCmd = "";
+		for(int i = 0; i < name.length(); i++) {
+			if(name.charAt(i) == ' ')
+				break;
+			
+				formCmd += name.charAt(i);
+		}
+		
+		for(Control c: controls) {
+			if(c.getDataType().equals("DBL")) {
+				formCmd += " %g";
+			}
+			else if(c.getDataType().equals("I32")) {
+				formCmd += " %d";
+			}
+			else if(c.getDataType().equals("String") || c.getDataType().equals("Boolean")) {
+				formCmd += " %s";
+			}
+		}
+		return formCmd + ";";
+	}
+	
+	public String getPolishedCommand(ArrayList<Control> controls) {
+		String polCmd = new String("");
+		
+		for(int i = 0; i < name.length(); i++) {
+			if(isParseChracter(name.charAt(i))) {
+				polCmd += name.charAt(i);
+			}
+		}
+		
+		int startOffset = polCmd.length() + 2;
+		int endOffset = startOffset;
+		
+		for(Control c: controls) {
+			if(c.getDataType().equals("DBL") || c.getDataType().equals("String")) {
+				polCmd += " {<VAL>}";
+				endOffset = startOffset + 6;
+				c.startOffset = startOffset;
+				c.endOffset = endOffset;
+			}
+			else if(c.getDataType().equals("I32")) {
+				polCmd += " {<VAL>}";
+				endOffset = startOffset + 6;
+				c.startOffset = startOffset;
+				c.endOffset = endOffset;
+			}
+			else if(c.getDataType().equals("Boolean")) {
+				polCmd += " {ON|OFF}";
+				endOffset = startOffset + 7;
+				c.startOffset = startOffset;
+				c.endOffset = endOffset;
+			}
+			else{
+				System.out.println("Unknown Type");
+			}
+			startOffset = endOffset + 2;
+			//System.out.println("Start:  " + startOffset + " End: " + endOffset);
+		}
+		
+		polCmd = polCmd.replaceAll("<","&lt;");
+		polCmd = polCmd.replaceAll(">","&gt;");
+		return polCmd;
+	}
+	
+	public static boolean isParseChracter(char c) {
+		char[] delims = {':','(',')'};
+		for(char ch: delims) {
+			if(c == ch || Character.isUpperCase(c))
+				return true;
+		}
+		return false;
 	}
 }
