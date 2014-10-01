@@ -3,16 +3,16 @@ public class Control {
 	private String type;
 	private String name;
 	private String dataType;
-	private String command;
+	private Command command;
 	private String ringValue;
 	public final static String[] dataTypes = {"double","integer","int","string","boolean","bool","ring"};
 	public final static int NUM_DATA_TYPES = 7;
 	
-	public Control(String type, String name, String dataType, String command, String ringValue) {
+	public Control(String type, String name, String dataType, Command command, String ringValue, int row) {
+		this.command = command;
 		this.type = type;
 		this.name = name;
 		this.dataType = dataType;
-		this.command = command;
 		this.ringValue = ringValue;
 	}
 	
@@ -24,7 +24,7 @@ public class Control {
 		return type;
 	}
 	
-	public String getCommand() {
+	public Command getCommand() {
 		return command;
 	}
 	

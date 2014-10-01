@@ -53,6 +53,15 @@ public class CompileError {
 			else if(arg1 == ERROR_2)
 				message("Possibly corrupt template.data file, re-download this file and verify it is in your data folder.");
 		}
+		
+		else if(type.equals("Command")) {
+			if(arg2 == ERROR_1)
+				message("No command specified at line " + arg1 + ".");
+			else if(arg2 == ERROR_2)
+				message("The number of controls found exceeded the command's specifications at line " + arg1 + ".");
+			else if(arg2 == ERROR_3)
+				message("The number of controls found was less than the command's specifications at line " + arg1 + ".");
+		}
 	}
 	
 	public void checkError(String type, int arg1, String str) {

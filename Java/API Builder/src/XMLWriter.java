@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 public class XMLWriter {
@@ -148,7 +149,7 @@ public class XMLWriter {
 			write(closeTag("Flag"));
 			
 			write(createTag("Path",null,v.getFolder().getPath(),true));
-			write(createTag("Description",null,"",true));
+			write(createTag("Description",null,"Specifies ... Valid Range: Min: Max: Default Value:",true));
 			write(createTag("ErrorQuery",null,"false",true));
 			write(createTag("ManualUpdate",null,"false",true));
 			write(createTag("BlockDiagramComments",null,"",true));
@@ -163,10 +164,18 @@ public class XMLWriter {
 			
 			write(closeTag("Parameters"));
 			
-			/* TODO Add command parsing here */
-			for(Control c: v.controls) {
-				System.out.println(c.getCommand());
-			}
+
+			/* TODO Continue After bug-fixes */
+			
+//			for(Iterator<Control> i = v.controls.iterator(); i.hasNext();) {
+//				Control curr = i.next();
+//				System.out.println(curr.getName() + " = " + curr.getCommand().controlsFound);
+//				for(int j = 0; j < curr.getCommand().controlsFound - 1; j++) {
+//					i.next();
+//				}
+//				//System.out.println(curr.getName());
+//			}
+			
 			write("<Commands TotalNumber=\"0\"/>");
 			
 			write(closeTag("Function"));
@@ -255,9 +264,9 @@ public class XMLWriter {
 	public static void writeCommandsRecurse(Folder fold, AttributeList al) {
 		for(Vi v : fold.vis) {
 			for(Control c: v.controls) {
-				if(!c.getCommand().equals("")) {
+				if(!c.getCommand().getName().equals("")) {
 					al.clear();
-					al.add("Identifier",c.getCommand());
+					al.add("Identifier",c.getCommand().getName());
 					al.add("NumberOfImplementation","1");
 					write(createTag("Command",al.attributes,"",true));
 				}
