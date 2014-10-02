@@ -179,6 +179,9 @@ public class SheetParser {
 					ce.checkError("Command", row, CompileError.ERROR_1);
 				}
 				
+				command = command.replaceAll("<","&lt;");
+				command = command.replaceAll(">","&gt;");
+				
 				Control cont = new Control("none","","",(new Command(command,row)),"", row);
 				currVi.controls.add(cont);
 			}

@@ -31,12 +31,7 @@ public class XMLWriter {
 		writeMetaData();
 		writeInstrumentInfo();
 		writeFolders(root);
-		write(closeTag("General"));
 		writeFunctions();
-		write(closeTag("Interface"));
-		write(closeTag("API"));
-		
-		/* Write out commands */
 		writeCommands();
 		write(closeTag("IDSpecification"));
 	}
@@ -92,6 +87,7 @@ public class XMLWriter {
 		write(createTag("Folders",null,"",false));
 		writeFoldersRecurse(fold);
 		write(closeTag("Folders"));
+		write(closeTag("General"));
 	}
 	
 	public static void writeFoldersRecurse(Folder fold) {	
@@ -110,6 +106,8 @@ public class XMLWriter {
 			writeTemplateFunctions();
 		
 		writeCustomFunctions();
+		write(closeTag("Interface"));
+		write(closeTag("API"));
 	}
 	
 	public static void writeTemplateFunctions() {
@@ -188,33 +186,35 @@ public class XMLWriter {
 			
 			for(Iterator<Control> i = v.controls.iterator(); i.hasNext();) {
 				Control curr = i.next();
-				Control multiLineControl = curr;
-				ArrayList<Control> controls = getMultiLineControls(v, curr);
-				
-				al.clear();
-				al.add("Identifier",curr.getCommand().getName());
-				al.add("Implementation","1");
-				write(createTag("Command",al.attributes,"",false));
-				write(createTag("Description",null,"",true));
-				write(createTag("PolishedCMD",null,curr.getCommand().getPolishedCommand(controls),true));
-				write(createTag("FormattedWrite",null,"",false));
-				write(createTag("FormattedCmd",null,curr.getCommand().getFormattedCommand(controls),true));
-				
-				/* Just write the command without a control */
-				if(!curr.getName().equals("")) {
-					writeCommandParameter(curr);
+				if(!curr.getCommand().getName().equals("")) {
+					Control multiLineControl = curr;
+					ArrayList<Control> controls = getMultiLineControls(v, curr);
+					
+					al.clear();
+					al.add("Identifier",curr.getCommand().getName());
+					al.add("Implementation","1");
+					write(createTag("Command",al.attributes,"",false));
+					write(createTag("Description",null,"",true));
+					write(createTag("PolishedCMD",null,curr.getCommand().getPolishedCommand(controls),true));
+					write(createTag("FormattedWrite",null,"",false));
+					write(createTag("FormattedCmd",null,curr.getCommand().getFormattedCommand(controls),true));
+					
+					/* Just write the command without a control */
+					if(!curr.getName().equals("")) {
+						writeCommandParameter(curr);
+					}
+					
+					for(int j = 0; j < curr.getCommand().controlsFound - 1; j++) {
+						multiLineControl = i.next();
+						writeCommandParameter(multiLineControl);
+					}
+					
+					write(closeTag("FormattedWrite"));
+					write(closeTag("Command"));
+					//System.out.println(curr.getName() + " = " + curr.getCommand().controlsFound);
+	
+					//System.out.println(curr.getName());
 				}
-				
-				for(int j = 0; j < curr.getCommand().controlsFound - 1; j++) {
-					multiLineControl = i.next();
-					writeCommandParameter(multiLineControl);
-				}
-				
-				write(closeTag("FormattedWrite"));
-				write(closeTag("Command"));
-				//System.out.println(curr.getName() + " = " + curr.getCommand().controlsFound);
-
-				//System.out.println(curr.getName());
 			}
 	
 			write(closeTag("Commands"));

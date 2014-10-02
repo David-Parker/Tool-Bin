@@ -54,13 +54,11 @@ public class Control {
 		}
 		
 		else if(str.toLowerCase().equals("boolean") || str.toLowerCase().equals("bool")) {
-			/* TODO Add Case */
-			return str;
+			return "Bool";
 		}
 		
 		else if(str.toLowerCase().equals("ring")) {
-			/* TODO Add Case */
-			return str;
+			return "Ring";
 		}
 		
 		return str;
