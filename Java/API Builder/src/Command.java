@@ -63,15 +63,7 @@ public class Command {
 		}
 		
 		for(Control c: controls) {
-			if(c.getDataType().equals("DBL")) {
-				formCmd += " %g";
-			}
-			else if(c.getDataType().equals("I32")) {
-				formCmd += " %d";
-			}
-			else if(c.getDataType().equals("String") || c.getDataType().equals("Boolean")) {
-				formCmd += " %s";
-			}
+			formCmd += c.formatter();
 		}
 		return formCmd + ";";
 	}
@@ -89,27 +81,11 @@ public class Command {
 		int endOffset = startOffset;
 		
 		for(Control c: controls) {
-			if(c.getDataType().equals("DBL") || c.getDataType().equals("String")) {
-				polCmd += " {<VAL>}";
-				endOffset = startOffset + 6;
-				c.startOffset = startOffset;
-				c.endOffset = endOffset;
-			}
-			else if(c.getDataType().equals("I32")) {
-				polCmd += " {<VAL>}";
-				endOffset = startOffset + 6;
-				c.startOffset = startOffset;
-				c.endOffset = endOffset;
-			}
-			else if(c.getDataType().equals("Boolean")) {
-				polCmd += " {ON|OFF}";
-				endOffset = startOffset + 7;
-				c.startOffset = startOffset;
-				c.endOffset = endOffset;
-			}
-			else{
-				System.out.println("Unknown Type");
-			}
+			polCmd += c.polishCommand();
+			endOffset = startOffset + c.polishedSize();
+			c.startOffset = startOffset;
+			c.endOffset = endOffset;
+
 			startOffset = endOffset + 2;
 			//System.out.println("Start:  " + startOffset + " End: " + endOffset);
 		}

@@ -182,7 +182,8 @@ public class SheetParser {
 				command = command.replaceAll("<","&lt;");
 				command = command.replaceAll(">","&gt;");
 				
-				Control cont = new Control("none","","",(new Command(command,row)),"", row);
+				/* The default type for a none control is a double */
+				Control cont = new vDouble("none","","",(new Command(command,row)), row);
 				currVi.controls.add(cont);
 			}
 			
@@ -273,7 +274,21 @@ public class SheetParser {
 		/*Check if this command still has the correct number of entries */
 		newCommand.checkNumControlsBelow(row);
 		
-		return new Control(strs[0],strs[1],strs[2],newCommand,strs[3], row);
+		switch(strs[2]) {
+		case "Int":
+			return new vInteger(strs[0],strs[1],strs[2],newCommand,row);
+		case "Double":
+			return new vDouble(strs[0],strs[1],strs[2],newCommand,row);
+		case "String":
+			return new vString(strs[0],strs[1],strs[2],newCommand,row);
+		case "Bool":
+			return new vBool(strs[0],strs[1],strs[2],newCommand,row);
+		case "Ring":
+			return new vRing(strs[0],strs[1],strs[2],newCommand,row,"");
+		default:
+			throw new IllegalArgumentException("Should not have validated this type!");
+		}
+		
 	}
 	
 	public static void checkFolderName(String name, int row) {

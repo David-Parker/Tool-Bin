@@ -283,47 +283,7 @@ public class XMLWriter {
 	
 	public static void writeControlDataType(Control c, AttributeList al) {
 		al.clear();
-		
-		if(c.getDataType().equals("I32")) {
-			writeControlTag(c,al);
-		}
-		
-		else if(c.getDataType().equals("DBL")) {
-			writeControlTag(c,al);
-		}
-		
-		else if(c.getDataType().equals("String")) {
-			writeControlTag(c,al);
-		}
-		
-	}
-	
-	public static void writeControlTag(Control c, AttributeList al) {
-
-		if(c.getDataType().equals("DBL") || c.getDataType().equals("I32")) {
-			al.add("Predefined","1");
-			al.add("Type",c.getDataType());
-			write(createTag("Numeric",al.attributes,"",true));
-		}
-		
-		else if(c.getDataType().equals("String")) {
-			al.add("Dimension", "-1");
-			al.add("Encoding","ASCII");
-			write(createTag("String",al.attributes,"",true));
-		}
-		
-		write(closeTag("DataType"));
-		al.clear();
-		
-		if(c.getDataType().equals("DBL") || c.getDataType().equals("I32")) 
-			al.add("Class","Numeric");
-		
-		else if(c.getDataType().equals("String"))
-			al.add("Class","String");
-		
-		al.add("DefaultValue","0");
-		al.add("Label",c.getName());
-		write(createTag("Control",al.attributes,"",true));
+		c.writeTag();
 	}
 	
 	public static void writeCommands() {

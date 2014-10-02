@@ -1,23 +1,20 @@
 
-public class Control {
+public abstract class Control {
 	private String type;
 	private String name;
 	private String dataType;
 	private Command command;
-	private String ringValue;
+	protected String polCmd;
 	public final static String[] dataTypes = {"double","integer","int","string","boolean","bool","ring"};
 	public final static int NUM_DATA_TYPES = 7;
 	public int startOffset;
 	public int endOffset;
 	
-	public Control(String type, String name, String dataType, Command command, String ringValue, int row) {
-		this.command = command;
+	public Control(String type, String name, String dataType, Command command, int row) {
 		this.type = type;
 		this.name = name;
 		this.dataType = dataType;
-		this.ringValue = ringValue;
-		startOffset = 0;
-		endOffset = 0;
+		this.command = command;
 	}
 	
 	public String getName() {
@@ -32,21 +29,29 @@ public class Control {
 		return command;
 	}
 	
-	public String getRing() {
-		return ringValue;
-	}
-	
 	public String getDataType() {
 		return dataType;
 	}
 	
+	public String polishCommand() {
+		return polCmd;
+	}
+	
+	public int polishedSize() {
+		return polCmd.length() - 2;
+	}
+	
+	/* Each type of control will write out its own tag */
+	public abstract void writeTag();
+	public abstract String formatter();
+	
 	public static String fixDataTypes(String str) {
 		if(str.toLowerCase().equals("int") || str.toLowerCase().equals("integer")) {
-			return "I32";
+			return "Int";
 		}
 		
 		else if(str.toLowerCase().equals("double")) {
-			return "DBL";
+			return "Double";
 		}
 		
 		else if(str.toLowerCase().equals("string")) {
