@@ -215,14 +215,18 @@ public class SheetParser {
 		String[] strs = new String[4];
 		int count = 0;
 		
-		if(!Control.isValidControlName(control)) {
+		if(!Control.isValidControlName(control)) {;
 			ce.checkError("Control", row, CompileError.ERROR_2);
 			return null;
 		}
 		
-		StringTokenizer strTok = new StringTokenizer(control, ":");
+		StringTokenizer strTok = new StringTokenizer(control, ": ");
 		
 		while(strTok.hasMoreTokens()) {
+			if(count > 3) {
+				ce.checkError("Control", row, CompileError.ERROR_2);
+				return null;
+			}
 			strs[count] = strTok.nextToken().trim();
 			count++;
 		}
@@ -236,6 +240,7 @@ public class SheetParser {
 		}
 		
 		if(strs[2] == null || !isValidDataType(strs[2])) {
+			System.out.println("here");
 			ce.checkError("Control", row, CompileError.ERROR_2);
 			return null;
 		}
@@ -284,7 +289,7 @@ public class SheetParser {
 		case "Bool":
 			return new vBool(strs[0],strs[1],strs[2],newCommand,row);
 		case "Ring":
-			return new vRing(strs[0],strs[1],strs[2],newCommand,row,"");
+			return new vRing(strs[0],strs[1],strs[2],newCommand,row,strs[3]);
 		default:
 			throw new IllegalArgumentException("Should not have validated this type!");
 		}
