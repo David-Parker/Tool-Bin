@@ -3,7 +3,7 @@ import java.util.*;
 public class MergeSort{
 
      public static void main(String []args){
-        List a = fillListRand(150);
+        List a = fillListRand(30);
         List sorted = mergeSort(a);
         System.out.println("Done.");
         System.out.println("Unsorted: " + a.toString());
