@@ -1,0 +1,1 @@
+g++ -std=c++11 PRNG.cpp PRNGTest.cpp -o ../Build/PRNG
